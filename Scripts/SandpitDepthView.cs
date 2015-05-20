@@ -46,10 +46,10 @@ public class SandpitDepthView : MonoBehaviour {
             once = false;
 
             //initializing all the lists
-            startMap = new byte[dsm.Height * dsm.Height]; //the map that constantly gets changed on frame update
-            finalMap = new byte[dsm.Height * dsm.Height]; //the obsticle map passed into the pathfinder
-            colourDepth = new byte[dsm.Height * dsm.Height * 4];
-            texture = new Texture2D(dsm.Height, dsm.Height, TextureFormat.RGBA32, false);
+			startMap = new byte[424 * 424]; //the map that constantly gets changed on frame update
+			finalMap = new byte[424 * 424]; //the obsticle map passed into the pathfinder
+			colourDepth = new byte[424 * 424 * 4];
+            texture = new Texture2D(424, 424, TextureFormat.RGBA32, false);
 
             return;
         }

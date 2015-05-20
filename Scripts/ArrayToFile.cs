@@ -11,12 +11,13 @@ public class ArrayToFile : MonoBehaviour {
     public DepthSourceManager dsm;
     public ushort[] depth;
 
+	//Change ME to make it work on a new machine!!!
+	private const string path = "C:\\Users\\En Bo\\Documents\\DECO3850\\ushort.txt"; 
 
 	public void Test()
 	{
         ushort[] depth = dsm.GetData();
-		string path = "C:\\Users\\Studio\\Documents\\DECO3850\\ushort.txt";
-
+		Debug.Log (path);
         
 		using (FileStream fs = new FileStream(path, FileMode.Truncate, FileAccess.Write))
 		{
@@ -39,7 +40,7 @@ public class ArrayToFile : MonoBehaviour {
     public ushort[] GetData()
     {
         depth = new ushort[512 * 424];
-        string text = System.IO.File.ReadAllText("C:\\Users\\Studio\\Documents\\DECO3850\\ushort.txt");
+        string text = System.IO.File.ReadAllText(path);
         string[] lineValues = text.Split(',');
         Debug.Log(lineValues.Length);
         for (int i = 0; i < lineValues.Length - 1; i++)
