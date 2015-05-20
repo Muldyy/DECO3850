@@ -8,13 +8,13 @@ public class SandpitDepthView : MonoBehaviour {
 
     private byte[] startMap;
     private byte[] finalMap;
-    private bool[] waterMap;
-    private bool[] landMap;
-    private bool[] finalWaterMap;
-    private bool[] finalLandMap;
     private byte[] colourDepth;
-    private const ushort min = 750;
-    private const ushort max = 880;
+    public ushort[] depth;
+    public ushort[] defaultMap;
+
+    //The upper and lower limit in mm
+    public const ushort min = 750;
+    public const ushort max = 880;
 
     private Texture2D texture;
     private Mesh mesh;
@@ -23,13 +23,18 @@ public class SandpitDepthView : MonoBehaviour {
 
     public DepthSourceManager dsm;
 
+    public ArrayToFile atf;
+
     private bool once = true;
+
+    private bool fromText = false;
 
     private Renderer renderer;
 
 	// Use this for initialization
 	void Start () {
         this.renderer = GetComponent<Renderer>();
+        defaultMap = atf.GetData();
 	}
 	
 	// Update is called once per frame
@@ -44,18 +49,22 @@ public class SandpitDepthView : MonoBehaviour {
             startMap = new byte[dsm.Height * dsm.Height]; //the map that constantly gets changed on frame update
             finalMap = new byte[dsm.Height * dsm.Height]; //the obsticle map passed into the pathfinder
             colourDepth = new byte[dsm.Height * dsm.Height * 4];
-            waterMap = new bool[dsm.Height * dsm.Height];
-            landMap = new bool[dsm.Height * dsm.Height];
-            finalWaterMap = new bool[dsm.Height * dsm.Height];
-            finalLandMap = new bool[dsm.Height * dsm.Height];
             texture = new Texture2D(dsm.Height, dsm.Height, TextureFormat.RGBA32, false);
 
             return;
         }
 
-
+        
+        if (fromText == true)
+        {
+            depth = dsm.GetData();
+        }
+        else
+        {
+            depth = defaultMap;
+        }
+        /////Updating map with Kinect/////
         //Putting kinect data into an array
-        ushort[] depth = dsm.GetData();
         int m = 0;
         //The loop which converts depth into terran colour
         for (int i = 0; i < 424; i++)
@@ -87,8 +96,6 @@ public class SandpitDepthView : MonoBehaviour {
         renderer.material.mainTexture = texture;
 
         finalMap = startMap;
-        finalWaterMap = waterMap;
-        finalLandMap = landMap;
 	}
 
     private void Mapcolour(ushort depth, int i)
@@ -107,8 +114,6 @@ public class SandpitDepthView : MonoBehaviour {
             colourDepth[i * 4 + 2] = 255;//(byte)(255 - (50 * thisDepth / (layerDepth)));
             colourDepth[i * 4 + 3] = 255;
             startMap[i] = 1;
-            waterMap[i] = false;
-            landMap[i] = true;
         }
         else if (depth < (max - layerDepth*2) && depth > (max - layerDepth*3))
         {
@@ -118,8 +123,6 @@ public class SandpitDepthView : MonoBehaviour {
             colourDepth[i * 4 + 2] = 150;
             colourDepth[i * 4 + 3] = 255;
             startMap[i] = 1;
-            waterMap[i] = false;
-            landMap[i] = true;
         }
         else if (depth < (max - layerDepth) && depth > (max - layerDepth*2))
         {
@@ -129,8 +132,6 @@ public class SandpitDepthView : MonoBehaviour {
             colourDepth[i * 4 + 2] = 15;
             colourDepth[i * 4 + 3] = 150;
             startMap[i] = 1;
-            waterMap[i] = false;
-            landMap[i] = true;
         }
         else if (depth < max && depth > (max - layerDepth))
         {
@@ -140,8 +141,6 @@ public class SandpitDepthView : MonoBehaviour {
             colourDepth[i * 4 + 2] = 5;
             colourDepth[i * 4 + 3] = 255;
             startMap[i] = 1;
-            waterMap[i] = false;
-            landMap[i] = true;
         }
         else if (depth >= max)
         {
@@ -151,8 +150,6 @@ public class SandpitDepthView : MonoBehaviour {
             colourDepth[i * 4 + 2] = (byte)(255f +(155 * (float)((height) / layerDepth)));
             colourDepth[i * 4 + 3] = 255; //(byte)(100 *(float)((height) / layerDepth));
             startMap[i] = 2;
-            waterMap[i] = true;
-            landMap[i] = false;
         }
         else
         {
@@ -161,17 +158,28 @@ public class SandpitDepthView : MonoBehaviour {
             colourDepth[i * 4 + 2] = 0;
             colourDepth[i * 4 + 3] = 255;
             startMap[i] = 0;
-            waterMap[i] = false;
-            landMap[i] = true;
         }
+    }
+
+    private void fillColour(int i, ushort depth)
+    {
+
     }
 
     public byte[] getMap(){
         return finalMap;
     }
 
-    public bool[] getLandMap()
+    //Control button functions
+    public void toggleKineticOn()
     {
-        return finalLandMap;
+        if (fromText == true)
+        {
+            fromText = false;
+        }
+        else
+        {
+            fromText = true;
+        }
     }
 }

@@ -8,9 +8,9 @@ public class SpawnControl : MonoBehaviour {
     public GameObject sandPitView;
 
     private int seaManCount = 0;
-    private int seaManMax = 20;
+    private int seaManMax = 5;
     private int landManCount = 0;
-    private int landManMax = 20;
+    private int landManMax = 5;
     private static bool seaManSpawn = false;
     private static bool landManSpawn = false;
 
@@ -20,6 +20,7 @@ public class SpawnControl : MonoBehaviour {
     {
         if (_instance == null)
         {
+            Debug.Log("SpawnControl: Instance is NULL. Run around in circles and panic.");
             _instance = new SpawnControl();
         }
         return _instance;
@@ -30,11 +31,13 @@ public class SpawnControl : MonoBehaviour {
 	void Start () {
         Instantiate(seaMan);
         Instantiate(landMan);
+        _instance = this;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if (seaManSpawn == true)
+        //Debug.Log("seamancount smaller than seamanmax: "+ (seaManCount < seaManMax));
+        if (seaManSpawn == true && seaManCount < seaManMax)
         {
             Debug.Log(seaManCount);
             Debug.Log(seaManMax);
@@ -43,7 +46,7 @@ public class SpawnControl : MonoBehaviour {
             seaManSpawn = false;
         }
 
-        if (landManSpawn == true )//&& landManCount < landManMax)
+        if (landManSpawn == true && landManCount < landManMax)//&& landManCount < landManMax)
         {
             Instantiate(landMan);
             landManCount++;
@@ -58,14 +61,21 @@ public class SpawnControl : MonoBehaviour {
     {
         switch (type)
         {
+            case -1:
+                landManCount--;
+                break;
             case 1:
-                Debug.Log("SPAWN");
+                landManSpawn = true;
+                break;
+            case -2:
+                seaManCount--;
+                break;
+            case 2:
                 seaManSpawn = true;
                 Debug.Log(seaManSpawn);
                 break;
-            case 2:
-                landManSpawn = true;
-                break;
+            
         }
     }
+
 }
