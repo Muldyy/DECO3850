@@ -2,11 +2,15 @@
 using System.Collections;
 
 public class SpawnControl : MonoBehaviour {
-    public GameObject seaMan;
-    public GameObject landMan;
 
     public GameObject sandPitView;
 
+    //Prefabs of all the creatures/plants that can be spawned
+    public GameObject seaMan;
+    public GameObject landMan;
+
+
+    //All the data keeping track of the stuff that has spawned
     private int seaManCount = 0;
     private int seaManMax = 5;
     private int landManCount = 0;

@@ -18,9 +18,12 @@ public abstract class Animals : MonoBehaviour
      */
     protected int type = 1;
 
-    //Starting location
-    protected int startX = 270;
-    protected int startY = 270;
+    //location in game space in pixels
+    protected float posX;
+    protected float posY;
+
+    protected int startX;
+    protected int startY;
 
     //Direction of this sprite is facing
     private Direction facing;
@@ -36,6 +39,9 @@ public abstract class Animals : MonoBehaviour
     // Use this for initialization
     protected virtual void Start()
     {
+        //Load the position and map position
+        LoadPos();
+
         if (pathFinder == null)
         {
             pathFinder = PathFinder.Instance();
@@ -51,6 +57,8 @@ public abstract class Animals : MonoBehaviour
     // Update is called once per frame
     protected virtual void Update()
     {
+        LoadPos();
+
         //Choose which heat map as path finding guide
         int[] heatMap = pathFinder.getHeatMap(type);
 
@@ -70,10 +78,6 @@ public abstract class Animals : MonoBehaviour
         else if (heatMap[startY * 424 + startX] == 9900)
         {
             spawnControl.Spawn(type);
-        }
-        else if (heatMap[startY * 424 + startX] == 9900 && b == false)
-        {
-            //Instantiate(prefab, new Vector3(-1.36793f, -1.36793f, 0f), Quaternion.Euler(new Vector3(0, 0, Random.Range(0, 360))));
         }
         else if (heatMap[startY * 424 + startX] == 9850 && a == false)
         {
@@ -347,17 +351,17 @@ public abstract class Animals : MonoBehaviour
                 break;
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
     }
+
+        protected void LoadPos (){
+            //Store the initial posistion
+            posX = transform.position.x;
+            posY = transform.position.y;
+
+            //Convert on cavas position into map position
+            startX = (int)(212 - (posX / pixelHeight));
+            startY = (int)(212 - (posY / pixelHeight));
+        }
+
+
 }
