@@ -2,14 +2,16 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class SeaManControl : Animals
+public class SeaManControl : Animal
 {
     // Use this for initialization
 
     // Use this for initialization
-    protected override void Start()
+    protected override void Update()
     {
-        type = 2;
-        base.Start();
+        //Choose which heat map as path finding guide
+        heatMap = pathFinder.getHeatMap(2);
+
+        base.Update();
     }
 }

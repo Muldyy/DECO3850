@@ -3,7 +3,8 @@ using System.Collections;
 
 public class SpawnControl : MonoBehaviour {
 
-    public GameObject sandPitView;
+    //public SandpitDepthView sdv;
+    private byte[] finalMap;
 
     //Prefabs of all the creatures/plants that can be spawned
     public GameObject seaMan;
@@ -40,7 +41,9 @@ public class SpawnControl : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        //finalMap = sdv.getMap();
         //Debug.Log("seamancount smaller than seamanmax: "+ (seaManCount < seaManMax));
+
         if (seaManSpawn == true && seaManCount < seaManMax)
         {
             Debug.Log(seaManCount);
@@ -49,19 +52,13 @@ public class SpawnControl : MonoBehaviour {
             seaManCount++;
             seaManSpawn = false;
         }
-
-        if (landManSpawn == true && landManCount < landManMax)//&& landManCount < landManMax)
-        {
-            Instantiate(landMan);
-            landManCount++;
-            landManSpawn = false;
-        }
        
 
         //Instantiate(seaMan);
 	}
 
-    public void Spawn(int type)
+
+    void Spawn(int type)
     {
         switch (type)
         {
@@ -69,16 +66,26 @@ public class SpawnControl : MonoBehaviour {
                 landManCount--;
                 break;
             case 1:
-                landManSpawn = true;
+                if (landManSpawn == true && landManCount < landManMax)//&& landManCount < landManMax)
+                {
+                    Instantiate(landMan);
+                    landManCount++;
+                    landManSpawn = false;
+                }
                 break;
             case -2:
                 seaManCount--;
                 break;
             case 2:
-                seaManSpawn = true;
-                Debug.Log(seaManSpawn);
+                if (landManSpawn == true && landManCount < landManMax)//&& landManCount < landManMax)
+                {
+                    Instantiate(landMan);
+                    landManCount++;
+                    landManSpawn = false;
+                }
                 break;
-            
+            default:
+                break;
         }
     }
 

@@ -2,13 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public abstract class Animals : MonoBehaviour
+public abstract class Animal : MonoBehaviour
 {
 
     public PathFinder pathFinder;
     public SpawnControl spawnControl;
 
-    public static int count = 1;
+    //public static int count = 1;
 
     //Creature type
     /*
@@ -16,25 +16,22 @@ public abstract class Animals : MonoBehaviour
      * 2 = seaMan
      * 
      */
-    protected int type = 1;
+    //protected int type = 1;
 
     //location in game space in pixels
     protected float posX;
     protected float posY;
 
-    protected int startX;
-    protected int startY;
+    //location in the map
+    protected int mapX;
+    protected int mapY;
 
     //Direction of this sprite is facing
     private Direction facing;
 
-    private bool a = false;
-    private bool b = false;
-    private bool c = false;
-    private bool d = false;
+    protected int[] heatMap;
 
     protected const float pixelHeight = 0.023585f;
-    // Use this for initialization
  
     // Use this for initialization
     protected virtual void Start()
@@ -57,35 +54,34 @@ public abstract class Animals : MonoBehaviour
     // Update is called once per frame
     protected virtual void Update()
     {
+
+        //Applying position, just in case it is bumped
         LoadPos();
 
-        //Choose which heat map as path finding guide
-        int[] heatMap = pathFinder.getHeatMap(type);
-
         //Spawning code
-        if (heatMap[startY * 424 + startX] == -1)//|| heatMap[startY * 424 + startX] == 0)
+        if (heatMap[mapY * 424 + mapX] == -1)//|| heatMap[mapY * 424 + mapX] == 0)
         {
             return;
         }
 
-        if (heatMap[startY * 424 + startX] == 10000 && d == false)
+        if (heatMap[mapY * 424 + mapX] == 10000)
         {
-            spawnControl.Spawn(type);
+            //spawnControl.Spawn(type);
             Destroy(this.gameObject);
-            spawnControl.Spawn(-(type));
+            //spawnControl.Spawn(-(type));
 
         }
-        else if (heatMap[startY * 424 + startX] == 9900)
+        else if (heatMap[mapY * 424 + mapX] == 9900)
         {
-            spawnControl.Spawn(type);
+            //spawnControl.Spawn(type);
         }
-        else if (heatMap[startY * 424 + startX] == 9850 && a == false)
+        else if (heatMap[mapY * 424 + mapX] == 9850)
         {
             //don't know yet
         }
 
         //moves character using current position and the heatmap choosen
-        Move(checkHeat(startX, startY, heatMap));
+        Move(checkHeat(mapX, mapY, heatMap));
     }
 
     public enum Direction
@@ -240,59 +236,6 @@ public abstract class Animals : MonoBehaviour
 
         //Final direction is returned
         return myDirection;
-
-        /*
-        if (rnd < 5)
-        {
-
-        }
-        else
-        {
-            if ((y - 1) > 0)
-            {
-                newHeight = heatMap[(y - 1) * 424 + x];
-
-                if (newHeight > curr)
-                {
-                    startY--;
-                    return Direction.North;
-                }
-            }
-            if ((y + 1) < 423)
-            {
-                newHeight = heatMap[(y + 1) * 424 + x];
-
-                if (newHeight > curr)
-                {
-                    startY++;
-                    return Direction.South;
-                }
-            }
-
-            if ((x - 1) > 0)
-            {
-                newHeight = heatMap[y * 424 + (x - 1)];
-
-                if (newHeight > curr)
-                {
-                    startX--;
-                    return Direction.East;
-                }
-            }
-            if ((x + 1) < 423)
-            {
-                newHeight = heatMap[y * 424 + (x + 1)];
-
-                if (newHeight > curr)
-                {
-                    startX++;
-                    return Direction.West;
-                }
-            }
-        }*/
-
-
-        //return Direction.DONTMOVE;
     }
 
 
@@ -303,46 +246,46 @@ public abstract class Animals : MonoBehaviour
         switch (dir)
         {
             case Direction.NorthWest:
-                startX++;
-                startY--;
+                mapX++;
+                mapY--;
                 transform.rotation = Quaternion.Euler(0, 0, 45);
                 transform.position += new Vector3(-pixelHeight, pixelHeight, 0f);//up left
                 break;
             case Direction.North:
-                startY--;
+                mapY--;
                 transform.rotation = Quaternion.Euler(0, 0, 0);
                 transform.position += new Vector3(0f, pixelHeight, 0f);//up
                 break;
             case Direction.NorthEast:
-                startX--;
-                startY--;
+                mapX--;
+                mapY--;
                 transform.rotation = Quaternion.Euler(0, 0, 315);
                 transform.position += new Vector3(pixelHeight, pixelHeight, 0f);//up right
                 break;
             case Direction.West:
-                startX++;
+                mapX++;
                 transform.rotation = Quaternion.Euler(0, 0, 90);
                 transform.position += new Vector3(-pixelHeight, 0f, 0f);//left
                 break;
             case Direction.East:
-                startX--;
+                mapX--;
                 transform.rotation = Quaternion.Euler(0, 0, 270);
                 transform.position += new Vector3(pixelHeight, 0f, 0f);//right
                 break;
             case Direction.SouthWest:
-                startX++;
-                startY++;
+                mapX++;
+                mapY++;
                 transform.rotation = Quaternion.Euler(0, 0, 135);
                 transform.position += new Vector3(-pixelHeight, -pixelHeight, 0f);//down left
                 break;
             case Direction.South:
-                startY++;
+                mapY++;
                 transform.rotation = Quaternion.Euler(0, 0, 180);
                 transform.position += new Vector3(0f, -pixelHeight, 0f);//down
                 break;
             case Direction.SouthEast:
-                startX--;
-                startY++;
+                mapX--;
+                mapY++;
                 transform.rotation = Quaternion.Euler(0, 0, 225);
                 transform.position += new Vector3(pixelHeight, -pixelHeight, 0f);//down right
                 break;
@@ -353,15 +296,26 @@ public abstract class Animals : MonoBehaviour
 
     }
 
-        protected void LoadPos (){
-            //Store the initial posistion
-            posX = transform.position.x;
-            posY = transform.position.y;
+    protected void LoadPos (){
+        //Store the initial posistion
+        posX = transform.position.x;
+        posY = transform.position.y;
 
-            //Convert on cavas position into map position
-            startX = (int)(212 - (posX / pixelHeight));
-            startY = (int)(212 - (posY / pixelHeight));
-        }
+        //Convert on cavas position into map position
+        mapX = (int)(212 - (posX / pixelHeight));
+        mapY = (int)(212 - (posY / pixelHeight));
+    }
 
 
+
+    //Public functions that allow the animal to interact with other elements
+    public int getLocationX()
+    {
+        return mapX;
+    }
+
+    public int getLocationY()
+    {
+        return mapY;
+    }
 }
